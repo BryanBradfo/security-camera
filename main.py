@@ -1,4 +1,5 @@
 import cv2
+import winsound
 
 # 0 because not multiple webcam, just 1 camera
 cam = cv2.VideoCapture(0)
@@ -31,11 +32,20 @@ while cam.isOpened():
     contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # draw that contour on your screen
-    cv2.drawContours(frame1, contours, -1, (0.255, 0), 2)
+    # cv2.drawContours(frame1, contours, -1, (0.255, 0), 2)
     
-    # # detect the big part
-    # for c in contours:
-    #     if cv2.contourArea(c)
+    # detect the big part
+    for c in contours:
+        # ignoring small motions
+        if cv2.contourArea(c) < 5000:
+            continue
+
+        x, y, w, h = cv2.boundingRect(c)
+        cv2.rectangle(frame1, (x,y), (x+w, y+h), (0,255,0), 2)
+        # winsound.Beep(500, 200)
+
+        #playing sound asynchronously
+        winsound.PlaySound('alert.wav', winsound.SND_ASYNC)
 
     # how to close the popup
     if cv2.waitKey(10) == ord('q'):
